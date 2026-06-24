@@ -9,9 +9,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f7f6f3;
-  color: #1a1a18;
-  padding: 28px 20px 60px;
+  background: #f7f6f3; color: #1a1a18;
+  padding: 28px 20px 40px;
 }
 h1 { font-size: 19px; font-weight: 500; margin-bottom: 4px; }
 .sub { font-size: 12px; color: #888780; margin-bottom: 18px; }
@@ -24,18 +23,25 @@ h1 { font-size: 19px; font-weight: 500; margin-bottom: 4px; }
   overflow: hidden; background: #faf9f7;
   border-radius: 12px 12px 0 0; border-bottom: 1px solid #ccc9c0;
 }
-#hdr-inner { display: flex; min-width: 1876px; }
+#hdr-inner { display: flex; min-width: 2036px; }
 #corner {
-  flex: 0 0 280px; position: sticky; left: 0; z-index: 31;
-  background: #faf9f7; border-right: 0.5px solid #e0ddd6;
-  display: flex; flex-direction: column;
+  flex: 0 0 440px; position: sticky; left: 0; z-index: 31;
+  background: #faf9f7; display: flex;
 }
-#corner .c-top {
+#corner-task {
+  width: 280px; flex-shrink: 0; display: flex; flex-direction: column;
+  border-right: 0.5px solid #e0ddd6;
+}
+#corner-notes {
+  width: 160px; flex-shrink: 0; display: flex; flex-direction: column;
+  border-right: 0.5px solid #e0ddd6;
+}
+.c-top {
   height: 24px; display: flex; align-items: center;
   padding: 0 10px 0 8px; font-size: 11px; font-weight: 500; color: #888780;
   border-bottom: 0.5px solid #e0ddd6;
 }
-#corner .c-bot {
+.c-bot {
   height: 30px; display: flex; align-items: center;
   padding: 0 10px 0 8px; font-size: 10px; color: #888780;
 }
@@ -43,20 +49,32 @@ h1 { font-size: 19px; font-weight: 500; margin-bottom: 4px; }
 #hdr-months { height: 24px; display: flex; align-items: stretch; border-bottom: 0.5px solid #e0ddd6; }
 #hdr-dow    { height: 30px; display: flex; align-items: center; }
 #body { overflow-x: auto; border-radius: 0 0 12px 12px; }
-#body-inner { min-width: 1876px; }
+#body-inner { min-width: 2036px; }
 .g-row { display: flex; align-items: stretch; }
 .lbl {
   flex: 0 0 280px; position: sticky; left: 0; z-index: 10;
   background: #fff; border-right: 0.5px solid #e0ddd6;
   display: flex; align-items: center; padding: 5px 10px 5px 8px;
 }
+.note-col {
+  flex: 0 0 160px; position: sticky; left: 280px; z-index: 10;
+  background: #fff; border-right: 0.5px solid #e0ddd6;
+  display: flex; align-items: flex-start; padding: 5px 6px;
+}
+.note-col textarea {
+  width: 100%; border: none; outline: none; resize: none;
+  font-family: inherit; font-size: 10px; color: #5f5e5a;
+  background: transparent; line-height: 1.5; min-height: 22px;
+  overflow: hidden;
+}
+.note-col textarea::placeholder { color: #c8c6c0; }
 .trk { flex: 0 0 1596px; position: relative; overflow: hidden; }
 .wk { background-color: #faf9f7; }
 .trk.wk { background-color: transparent; }
 .phase-row { background: #faf9f7; border-top: 1px solid #e0ddd6; border-bottom: 0.5px solid #e8e5de; }
-.phase-row .lbl { background: #faf9f7; }
+.phase-row .lbl, .phase-row .note-col { background: #faf9f7; }
 .task-row { border-bottom: 0.5px solid #f0ede7; }
-.task-row:hover .lbl { background: #faf8f5; }
+.task-row:hover .lbl, .task-row:hover .note-col { background: #faf8f5; }
 .task-lbl { display: flex; align-items: flex-start; gap: 6px; width: 100%; }
 .task-lbl input[type=checkbox] { margin-top: 2px; flex-shrink: 0; width: 13px; height: 13px; }
 .t-n { font-size: 11px; color: #3d3c3a; line-height: 1.45; display: block; }
@@ -64,6 +82,12 @@ h1 { font-size: 19px; font-weight: 500; margin-bottom: 4px; }
 .t-m { font-size: 10px; color: #aaa; display: block; margin-top: 1px; }
 .bar-bg { position: absolute; height: 14px; border-radius: 3px; top: 50%; transform: translateY(-50%); }
 .bar-fg { position: absolute; height: 14px; border-radius: 3px; top: 50%; transform: translateY(-50%); transition: width .25s ease; }
+#scroll-rail {
+  position: fixed; bottom: 0; height: 14px; z-index: 200;
+  overflow-x: scroll; overflow-y: hidden;
+  background: #f0ede8; border-top: 0.5px solid #d3d1c7;
+}
+#scroll-inner { height: 1px; width: 2036px; }
 </style>
 </head>
 <body>
@@ -74,8 +98,14 @@ h1 { font-size: 19px; font-weight: 500; margin-bottom: 4px; }
   <div id="hdr">
     <div id="hdr-inner">
       <div id="corner">
-        <div class="c-top">Task</div>
-        <div class="c-bot">Assignee</div>
+        <div id="corner-task">
+          <div class="c-top">Task</div>
+          <div class="c-bot">Assignee</div>
+        </div>
+        <div id="corner-notes">
+          <div class="c-top">Notes</div>
+          <div class="c-bot"></div>
+        </div>
       </div>
       <div id="hdr-timeline" style="position:relative">
         <div id="hdr-months" class="wk"></div>
@@ -88,6 +118,7 @@ h1 { font-size: 19px; font-weight: 500; margin-bottom: 4px; }
     <div id="body-inner"></div>
   </div>
 </div>
+<div id="scroll-rail"><div id="scroll-inner"></div></div>
 <script>
 const PS   = new Date(2026, 7, 20);
 const PE   = new Date(2026, 11, 11);
@@ -99,8 +130,7 @@ const fd   = d => d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
 const dOff = d => Math.round((d - PS) / 864e5);
 const dDur = (s, e) => Math.round((e - s) / 864e5) + 1;
 
-// ── Shared state via GitHub ──
-const GH_TOKEN = 'github_pat_11CGXHD3A0TWaRfYoEEuco' + '_eZsqIWCRPzeO4ogJfgEOMhOkyReo92tAIrQkoT1geEFTO6HXLDL1T9gAEXK';
+const GH_TOKEN   = 'github_pat_11CGXHD3A0TWaRfYoEEuco' + '_eZsqIWCRPzeO4ogJfgEOMhOkyReo92tAIrQkoT1geEFTO6HXLDL1T9gAEXK';
 const GH_REPO    = 'wpantoja123/2027-Budget-Timeline';
 const STATE_FILE = 'state.json';
 const EDIT_MODE  = location.hash === '#edit';
@@ -149,6 +179,16 @@ async function tog(id) {
   ghState[id] = !ghState[id];
   applyTask(id, ghState[id]);
   await pushState();
+}
+
+function saveNote(id) {
+  const ta = document.getElementById('note-' + id);
+  if (ta) localStorage.setItem('note27-' + id, ta.value);
+}
+
+function autoResize(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
 }
 
 const HOLIDAYS = [
@@ -248,6 +288,7 @@ let bodyHtml='';
 PH.forEach(ph=>{
   bodyHtml+=`<div class="g-row phase-row" style="height:26px">
     <div class="lbl"><span style="font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px;background:${ph.bg};color:${ph.ct}">${ph.name}</span></div>
+    <div class="note-col"></div>
     <div class="trk wk" style="background-image:${WG}"></div>
   </div>`;
   ph.tasks.forEach(t=>{
@@ -263,6 +304,9 @@ PH.forEach(ph=>{
           </span>
         </label>
       </div>
+      <div class="note-col">
+        <textarea id="note-${t.id}" placeholder="Add note…" oninput="saveNote('${t.id}');autoResize(this)"></textarea>
+      </div>
       <div class="trk wk" style="background-image:${WG}">
         <div class="bar-bg" id="bg-${t.id}" style="left:${off}px;width:${w}px;background:${ph.c};opacity:0.2;transition:opacity .15s"></div>
         <div class="bar-fg" id="fg-${t.id}" style="left:${off}px;width:0px;background:${ph.c};transition:filter .15s"></div>
@@ -273,9 +317,41 @@ PH.forEach(ph=>{
 });
 document.getElementById('body-inner').innerHTML=bodyHtml;
 
-const hdr=document.getElementById('hdr'), body=document.getElementById('body');
-body.addEventListener('scroll',()=>{hdr.scrollLeft=body.scrollLeft;});
+// Restore saved notes
+PH.forEach(ph=>ph.tasks.forEach(t=>{
+  const ta=document.getElementById('note-'+t.id);
+  const saved=localStorage.getItem('note27-'+t.id);
+  if(ta&&saved){ta.value=saved;autoResize(ta);}
+}));
 
+// ── Scroll sync ──
+const hdr  = document.getElementById('hdr');
+const body = document.getElementById('body');
+const rail = document.getElementById('scroll-rail');
+
+function positionRail(){
+  const rect=body.getBoundingClientRect();
+  rail.style.left=rect.left+'px';
+  rail.style.width=rect.width+'px';
+}
+positionRail();
+window.addEventListener('resize',positionRail);
+
+let syncing=false;
+body.addEventListener('scroll',()=>{
+  if(syncing)return; syncing=true;
+  hdr.scrollLeft=body.scrollLeft;
+  rail.scrollLeft=body.scrollLeft;
+  syncing=false;
+});
+rail.addEventListener('scroll',()=>{
+  if(syncing)return; syncing=true;
+  body.scrollLeft=rail.scrollLeft;
+  hdr.scrollLeft=rail.scrollLeft;
+  syncing=false;
+});
+
+// ── Bar hover highlight ──
 const hl=document.getElementById('hdr-hl');
 let _curId=null;
 function hlBar(off,w,color,id){
