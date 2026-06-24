@@ -209,9 +209,15 @@ const mkGrads = (dates, color) => dates
   .map(d => { const x = dOff(d)*DW; return `linear-gradient(90deg,transparent ${x}px,${color} ${x}px,${color} ${x+DW}px,transparent ${x+DW}px)`; })
   .join(',');
 
-// Stack order (first = top): weekends → holidays → Wes OOO
-// Gray wins on any day that is both a weekend/holiday AND OOO
+// Month boundary vertical lines (Aug/Sep, Sep/Oct, Oct/Nov, Nov/Dec)
+const MONTH_LINES = [12, 42, 73, 103].map(d => {
+  const x = d * DW;
+  return `linear-gradient(90deg,transparent ${x-1}px,#c8c5bf ${x-1}px,#c8c5bf ${x}px,transparent ${x}px)`;
+}).join(',');
+
+// Stack order (first = top): month lines → weekends → holidays → Wes OOO
 const WG = [
+  MONTH_LINES,
   `repeating-linear-gradient(90deg,transparent 0,transparent ${2*DW}px,#e0ddd8 ${2*DW}px,#e0ddd8 ${4*DW}px,transparent ${4*DW}px,transparent ${7*DW}px)`,
   mkGrads(HOLIDAYS, '#e0ddd8'),
   mkGrads(WES_OOO,  '#fddcb4'),
@@ -365,10 +371,4 @@ function tog(id, fullW) {
   const nowDone = localStorage.getItem('b27-' + id) !== '1';
   localStorage.setItem('b27-' + id, nowDone ? '1' : '0');
   const fg = document.getElementById('fg-' + id);
-  const nm = document.getElementById('nm-' + id);
-  if (fg) { fg.style.width = (nowDone ? fullW : 0) + 'px'; fg.style.minWidth = nowDone ? '3px' : '0'; }
-  if (nm) nm.classList.toggle('done', nowDone);
-}
-</script>
-</body>
-</html>
+ 
