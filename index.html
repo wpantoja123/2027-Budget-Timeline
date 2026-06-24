@@ -268,8 +268,6 @@ const PH = [
 ];
 
 document.getElementById('leg').innerHTML = [
-  ...PH.map(p=>`<div class="leg"><div class="leg-dot" style="background:${p.c}"></div>${p.name}</div>`),
-  `<div style="width:100%;height:0"></div>`,
   `<div class="leg"><div class="leg-dot" style="background:#e0ddd8;border:0.5px solid #c8c5bf"></div>Weekend / holiday</div>`,
   `<div class="leg"><div class="leg-dot" style="background:#fef0d9;border:0.5px solid #deb8b8"></div>Wes OOO</div>`,
 ].join('');
