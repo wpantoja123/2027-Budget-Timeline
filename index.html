@@ -281,7 +281,7 @@ document.getElementById('hdr-dow').style.backgroundImage = 'none';
 let dowHtml = '';
 for (let i=0;i<DAYS;i++){
   const dow=(SD+i)%7, wknd=dow===0||dow===6;
-  const date=new Date(PS.getTime()+i*864e5);
+  const date=new Date(PS.getFullYear(),PS.getMonth(),PS.getDate()+i);
   dowHtml+=`<div style="width:${DW}px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
     <span style="font-size:9px;line-height:1;color:${wknd?'#c0bdb5':'#888780'}">${DOW[dow]}</span>
     ${!wknd?`<span style="font-size:8px;line-height:1;color:#b4b2a9">${date.getDate()}</span>`:''}
