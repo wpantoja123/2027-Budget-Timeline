@@ -101,6 +101,11 @@ h1 { font-size: 19px; font-weight: 500; margin-bottom: 4px; }
   </div>
 </div>
 <p class="sub">August 20 – December 11, 2026 &nbsp;·&nbsp; Finance / Inception Fertility</p>
+<div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:18px;padding:8px 14px;background:#fff;border:0.5px solid #d3d1c7;border-radius:8px">
+  <span style="font-size:11px;color:#888780">Days until 1st Pass submission:</span>
+  <span id="countdown" style="font-size:18px;font-weight:600;color:#378ADD;font-variant-numeric:tabular-nums"></span>
+  <span style="font-size:11px;color:#aaa">days</span>
+</div>
 <div class="legend" id="leg"></div>
 <div class="card">
   <div id="hdr">
@@ -387,6 +392,17 @@ function setZoom(z) {
 setZoom(curZoom);
 syncState();
 setInterval(syncState,30000);
+
+// Countdown to 1st pass (Sep 25, 2026)
+(function(){
+  const target = new Date(2026, 8, 25);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const diff = Math.ceil((target - today) / 864e5);
+  const el = document.getElementById('countdown');
+  if (diff > 0) el.textContent = diff;
+  else if (diff === 0) { el.textContent = 'Today!'; el.style.color='#1D9E75'; }
+  else { el.textContent = Math.abs(diff) + ' past'; el.style.color='#aaa'; }
+})();
 </script>
 </body>
 </html>
