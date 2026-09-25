@@ -212,7 +212,7 @@ const WES_OOO = [
   new Date(2026,7,24), new Date(2026,7,25), new Date(2026,7,26), new Date(2026,7,27), new Date(2026,7,28),
   new Date(2026,7,31), new Date(2026,8,1), new Date(2026,8,2), new Date(2026,8,3), new Date(2026,8,4), new Date(2026,8,8),
   new Date(2026,8,10), new Date(2026,8,11), new Date(2026,8,15), new Date(2026,8,17),
-  new Date(2026,8,21), new Date(2026,8,22), new Date(2026,8,24), new Date(2026,8,28), new Date(2026,8,29),
+  new Date(2026,8,28), new Date(2026,8,29),
   new Date(2026,9,1), new Date(2026,9,5), new Date(2026,9,6), new Date(2026,9,15), new Date(2026,9,20),
   new Date(2026,9,23), new Date(2026,9,26), new Date(2026,9,30), new Date(2026,10,5), new Date(2026,10,6),
 ];
@@ -224,11 +224,17 @@ const MONTH_LINES = [12,42,73,103].map(d => {
   const x = d*DW;
   return `linear-gradient(90deg,transparent ${x-1}px,#c8c5bf ${x-1}px,#c8c5bf ${x}px,transparent ${x}px)`;
 }).join(',');
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const todayOff = Math.round((TODAY - PS) / 864e5);
+const TODAY_GRAD = (todayOff >= 0 && todayOff < DAYS)
+  ? `linear-gradient(90deg,transparent ${todayOff*DW}px,rgba(55,138,221,0.14) ${todayOff*DW}px,rgba(55,138,221,0.14) ${(todayOff+1)*DW}px,transparent ${(todayOff+1)*DW}px)`
+  : '';
 const WG = [
   MONTH_LINES,
   `repeating-linear-gradient(90deg,transparent 0,transparent ${2*DW}px,#e0ddd8 ${2*DW}px,#e0ddd8 ${4*DW}px,transparent ${4*DW}px,transparent ${7*DW}px)`,
   mkGrads(HOLIDAYS,'#e0ddd8'),
   mkGrads(WES_OOO,'#fef0d9'),
+  TODAY_GRAD,
 ].filter(Boolean).join(',');
 
 const PH = [
@@ -288,9 +294,10 @@ let dowHtml = '';
 for (let i=0;i<DAYS;i++){
   const dow=(SD+i)%7, wknd=dow===0||dow===6;
   const date=new Date(PS.getFullYear(),PS.getMonth(),PS.getDate()+i);
-  dowHtml+=`<div style="width:${DW}px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
-    <span style="font-size:9px;line-height:1;color:${wknd?'#c0bdb5':'#888780'}">${DOW[dow]}</span>
-    ${!wknd?`<span style="font-size:8px;line-height:1;color:#b4b2a9">${date.getDate()}</span>`:''}
+  const isToday = i === todayOff;
+  dowHtml+=`<div style="width:${DW}px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px${isToday?';border-bottom:2px solid #378ADD':''}">
+    <span style="font-size:9px;line-height:1;color:${isToday?'#378ADD':wknd?'#c0bdb5':'#888780'};font-weight:${isToday?'700':'400'}">${DOW[dow]}</span>
+    ${!wknd?`<span style="font-size:8px;line-height:1;color:${isToday?'#378ADD':'#b4b2a9'};font-weight:${isToday?'700':'400'}">${date.getDate()}</span>`:''}
   </div>`;
 }
 document.getElementById('hdr-dow').innerHTML=dowHtml;
